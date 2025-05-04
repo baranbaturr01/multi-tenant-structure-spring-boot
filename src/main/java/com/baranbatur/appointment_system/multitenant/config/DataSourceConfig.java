@@ -11,21 +11,20 @@ import java.util.Map;
 @Configuration
 public class DataSourceConfig {
 
-    @Bean
-    public DataSource dataSource() {
+    @Bean("centralDataSource")
+    public DataSource centralDataSource() {
         RoutingDataSource dataSource = new RoutingDataSource();
 
         // Burada veritabanı bağlantılarının yönlendirilmesini sağlıyoruz
         Map<Object, Object> targetDataSources = new HashMap<>();
 
         // Default DB
-        targetDataSources.put("default", createDataSource("jdbc:postgresql://localhost:5432/default_db"));
+        targetDataSources.put("default", createDataSource("jdbc:postgresql://localhost:5435/default_db"));
 
-        // Burada tenant’lara ait veritabanlarını ekleyeceğiz
-        targetDataSources.put("berbera", createDataSource("jdbc:postgresql://localhost:5432/berbera_db"));
+   
 
         dataSource.setTargetDataSources(targetDataSources);
-        dataSource.setDefaultTargetDataSource(createDataSource("jdbc:postgresql://localhost:5432/default_db"));
+        dataSource.setDefaultTargetDataSource(createDataSource("jdbc:postgresql://localhost:5435/default_db"));
 
         return dataSource;
     }

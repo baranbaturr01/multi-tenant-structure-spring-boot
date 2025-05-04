@@ -1,0 +1,56 @@
+-- Kiracı veritabanı şeması
+CREATE TABLE IF NOT EXISTS chairs (
+    id SERIAL PRIMARY KEY,
+    number INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS staff (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    chair_id INTEGER,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chair_id) REFERENCES chairs(id)
+);
+
+CREATE TABLE IF NOT EXISTS appointments (
+    id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
+    customer_phone VARCHAR(20) NOT NULL,
+    chair_id INTEGER NOT NULL,
+    staff_id INTEGER NOT NULL,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chair_id) REFERENCES chairs(id),
+    FOREIGN KEY (staff_id) REFERENCES staff(id)
+);
+
+CREATE TABLE IF NOT EXISTS appointment_settings (
+    id SERIAL PRIMARY KEY,
+    reminder_before_minutes INTEGER DEFAULT 30,
+    sms_enabled BOOLEAN DEFAULT true,
+    email_enabled BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS working_hours (
+    id SERIAL PRIMARY KEY,
+    start_time VARCHAR(5) DEFAULT '09:00',
+    end_time VARCHAR(5) DEFAULT '18:00',
+    appointment_interval INTEGER DEFAULT 30,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 

@@ -4,12 +4,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StaffService {
+public class StaffAuthService {
 
     private final StaffRepository repo;
     private final PasswordEncoder encoder;
 
-    public StaffService(StaffRepository repo, PasswordEncoder encoder) {
+    public StaffAuthService(StaffRepository repo, PasswordEncoder encoder) {
         this.repo = repo;
         this.encoder = encoder;
     }

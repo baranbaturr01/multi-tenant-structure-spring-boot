@@ -1,45 +1,39 @@
 package com.baranbatur.appointment_system.multitenant.tenant;
 
-
 import com.baranbatur.appointment_system.multitenant.central.repository.TenantRepository;
-import jakarta.servlet.Filter;
+import com.baranbatur.appointment_system.multitenant.context.TenantContext;
+
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//Subdomain'e göre tenant’ı belirlemek için bir filter kullanıyorum
-@WebFilter(urlPatterns = "/*")
-public class TenantResolverFilter implements Filter {
+//Subdomain'e göre tenant'ı belirlemek için bir filter kullanıyorum
+public class TenantResolverFilter extends OncePerRequestFilter {
 
     @Autowired
     private TenantRepository tenantRepository;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialization logic if needed
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String tenant = resolveTenantFromRequest(request);
+        TenantContext.setCurrentTenant(tenant);
+
+        filterChain.doFilter(request, response);
+
+        TenantContext.clear();  // Cleanup after request
     }
 
-    @Override
-    public void doFilter(jakarta.servlet.ServletRequest request, jakarta.servlet.ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String host = httpRequest.getServerName(); // örneğin: mekanA.batur.com
-        String subdomain = host.split("\\.")[0]; // mekanA
-
-        tenantRepository.findByName(subdomain)
-                .ifPresent(tenant -> TenantContext.setCurrentTenant(tenant.getName()));
-
-        chain.doFilter(request, response);
-    }
-
-    @Override
-    public void destroy() {
-        // Cleanup logic if needed
+    private String resolveTenantFromRequest(HttpServletRequest request) {
+        String host = request.getHeader("Host");
+        // Burada, subdomain'den tenant adı alıyoruz
+        String tenant = host != null && host.contains(".localhost") ? host.split("\\.")[0] : "default";
+        return tenant;
     }
 }

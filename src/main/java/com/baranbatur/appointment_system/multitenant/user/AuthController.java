@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/staff")
 public class AuthController {
 
-    private final StaffService staffService;
+    private final StaffAuthService staffAuthService;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(StaffService staffService,
+    public AuthController(StaffAuthService staffAuthService,
                           AuthenticationManager authManager,
                           JwtUtil jwtUtil) {
-        this.staffService = staffService;
+        this.staffAuthService = staffAuthService;
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody RegisterRequest req) {
-        staffService.register(req.getUsername(), req.getPassword(), "STAFF");
+        staffAuthService.register(req.getUsername(), req.getPassword(), "STAFF");
         return ResponseEntity.ok().build();
     }
 

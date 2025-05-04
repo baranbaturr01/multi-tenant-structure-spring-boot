@@ -1,31 +1,33 @@
 package com.baranbatur.appointment_system.multitenant.config;
 
 import com.baranbatur.appointment_system.multitenant.context.TenantContext;
-import com.baranbatur.appointment_system.multitenant.user.User;
-import com.baranbatur.appointment_system.multitenant.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class TenantUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepo;
-
-    public TenantUserDetailsService(UserRepository repo) {
-        this.userRepo = repo;
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String tenant = TenantContext.getCurrentTenant();
-        // (RoutingDataSource sayesinde doğru repo kullanılıyor)
-        User u = userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return User.withUsername(u.getUsername())
-                .password(u.getPassword())
-                .roles(u.getRole())
-                .build();
+        Map<String, Object> user = jdbcTemplate.queryForMap(
+            "SELECT * FROM tenant_users WHERE username = ?",
+            username
+        );
+        
+        return org.springframework.security.core.userdetails.User
+            .withUsername((String) user.get("username"))
+            .password((String) user.get("password"))
+            .roles((String) user.get("role"))
+            .build();
     }
 }

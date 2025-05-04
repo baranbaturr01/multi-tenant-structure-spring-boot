@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -18,7 +20,8 @@ public class DataSourceProvider {
     private final AbstractRoutingDataSource routingDataSource;
 
     @Autowired
-    public DataSourceProvider(AbstractRoutingDataSource routingDataSource) {
+    @Lazy
+    public DataSourceProvider(@Qualifier("abstractRoutingDataSource") AbstractRoutingDataSource routingDataSource) {
         this.routingDataSource = routingDataSource;
     }
 
@@ -37,4 +40,4 @@ public class DataSourceProvider {
     public DataSource getDataSource(String tenantId) {
         return dataSources.get(tenantId);
     }
-}}
+}

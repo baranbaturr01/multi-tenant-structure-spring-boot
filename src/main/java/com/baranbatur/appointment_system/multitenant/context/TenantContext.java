@@ -4,8 +4,8 @@ public class TenantContext {
 
     private static final ThreadLocal<String> currentTenant = new ThreadLocal<>();
 
-    public static void setCurrentTenant(String tenant) {
-        currentTenant.set(tenant);
+    public static void setCurrentTenant(String tenantId) {
+        currentTenant.set(tenantId);
     }
 
     public static String getCurrentTenant() {
