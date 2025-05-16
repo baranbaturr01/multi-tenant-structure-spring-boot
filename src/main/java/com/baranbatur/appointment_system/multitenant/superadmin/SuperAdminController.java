@@ -1,6 +1,6 @@
 package com.baranbatur.appointment_system.multitenant.superadmin;
 
-import com.baranbatur.appointment_system.multitenant.security.Role;
+
 import com.baranbatur.appointment_system.multitenant.tenant.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

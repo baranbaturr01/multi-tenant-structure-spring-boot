@@ -1,6 +1,10 @@
 package com.baranbatur.appointment_system.multitenant.notification;
 
 import org.springframework.stereotype.Service;
+import com.mailersend.sdk.emails.Email;
+import com.mailersend.sdk.exceptions.MailerSendException;
+import com.mailersend.sdk.MailerSend;
+import com.mailersend.sdk.MailerSendResponse;
 
 import java.util.Map;
 
@@ -24,7 +28,20 @@ public class NotificationService {
             customerName, startTime, chairName, staffName
         );
 
-        // TODO: Email gönderme implementasyonu
+        Email emailClass =new Email();
+        emailClass.setFrom("BiKareSoft", "bikaresoft@gmail.com");
+        emailClass.addRecipient(customerName, email);
+        emailClass.setSubject(subject);
+        emailClass.setHtml(message);
+        MailerSend ms =new MailerSend();
+        ms.setToken("mlsn.c98d6ae0fe028f8db4f98cf3bfb1ec9315a7f230dd54b41206c546e9bd942230");
+        try {    
+            MailerSendResponse response = ms.emails().send(emailClass);
+            System.out.println(response.messageId);
+        } catch (MailerSendException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Email gönderiliyor: " + email);
         System.out.println("Konu: " + subject);
         System.out.println("Mesaj: " + message);
